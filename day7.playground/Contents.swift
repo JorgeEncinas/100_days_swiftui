@@ -233,6 +233,75 @@ func checkPassword(_ password: String) throws -> String {
 // 3. Being marked with throws does not mean the function MUST throw errors, only that it might
 // 4. When it comes to throw an error, we write THROW, then one of our Error cases.
 //      This IMMEDIATELY exits the function, meaning it won't return a string
+// 5. If NO ERRORS are thrown, the function behaves like normal, returning whatever you define.
 
+// Okay, so we've covered...
+// 1. Defining the possible errors
+// 2. Creating our function, and in that function adding the possible exceptions to be thrown
 
+// Now it's time for 3. Run the function, HANDLING POSSIBLE ERRORS.
 
+// 3.1 Start a block using do {}
+// 3.2 Call in one or more throwing functions, using try {}
+// 3.3 Handling thrown errors with catch {}
+
+enum RandomnessError : Error {
+    case random
+}
+
+func someRiskyWork() throws -> String {
+    let randomResult = Int.random(in: 1...10)
+    if (randomResult < 10) {
+        throw RandomnessError.random
+    }
+    return "I randomly throw errors"
+}
+
+do {
+    try someRiskyWork()
+} catch {
+    print("Handle errors here!")
+}
+
+// Let's see it for the Password example
+let somePWString = "12345"
+do {
+    let result = try checkPassword(somePWString)
+    print("Password rating: \(result)")
+} catch {
+    print("There was an error")
+}
+
+// try NEEDS to be within a DO block.
+// There is an alternative, "try!" which does NOT require DO and CATCH,
+//      but it WILL crash your code if an error is thrown.
+
+// Let's catch specific errors
+do {
+    let result = try checkPassword(somePWString)
+    print("Password rating: \(result)")
+} catch PasswordError.short {
+    print("Please create a longer password.")
+} catch PasswordError.obvious {
+    print("Your password is too obvious. It is so obvious we already guessed it.")
+} catch { //The generic case
+    print("An unexpected error has occurred.")
+}
+
+// Most errors throw a meaningful message to show to your user if needed.
+//  Swift makes this available, there is an `error` value automatically provided inside your catch block
+//  error.localizedDescription can tell you exactly what happened.
+
+// SUMMARY
+//      Functions - Reuse code
+//      func function_name(external_argument_name inner_argument_name: type = default_value) throws -> output_type {
+//      }
+
+//      func other_function(_ internal_name: type) -> (firstArgumentOfATuple: type, secondArgOfATuple: type) {}
+
+//      Functions can throw errors, make sure you
+//          1. Create the enum
+//          2. Create your function with throws and implement cases
+//          3. Handle it with do{ try } catch FunctionErrors.your_case { } catch {}
+
+//      EXTRA: You can make nullables (`nil`ables here am I right) with a question mark after the type.
